@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"net"
 	"reflect"
+	"strings"
 	"time"
 
 	"k8s.io/apimachinery/pkg/api/equality"
@@ -405,6 +406,13 @@ func (oc *OpenstackClient) updateAnnotation(machine *machinev1.Machine, id strin
 	networkAddresses = append(networkAddresses, corev1.NodeAddress{
 		Type:    corev1.NodeHostName,
 		Address: machine.Name,
+	})
+
+	ip_split := strings.Split(ip, ".")
+	internalDNS := fmt.Sprintf("host-%s-%s-%s-%s", ip_split[0], ip_split[1], ip_split[2], ip_split[3])
+	networkAddresses = append(networkAddresses, corev1.NodeAddress{
+		Type:    corev1.NodeInternalDNS,
+		Address: internalDNS,
 	})
 
 	machineCopy := machine.DeepCopy()
